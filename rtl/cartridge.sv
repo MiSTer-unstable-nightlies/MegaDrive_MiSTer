@@ -856,6 +856,8 @@ always @(posedge clk) begin
 		crc_real <= 0;
 		crc <= 0;
 	end
+	
+	if(cart_ms & cart_dl) gun_sensor_delay <= 0;
 
 	if(cart_dl_wr & cart_dl & ~cart_ms) begin
 		if(cart_dl_addr == 'h000) sp[31:16] <= {cart_dl_data[7:0],cart_dl_data[15:8]};
