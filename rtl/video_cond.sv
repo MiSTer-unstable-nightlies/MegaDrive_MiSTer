@@ -63,8 +63,14 @@ wire [11:0] arxt[16] = '{/* 248 */ 31,62,124,0, /* 256 */ 32,64,128,0, /* 320 */
 wire [11:0] aryt[16] = '{/* 248 */ 21,49,105,0, /* 256 */ 21,49,105,0, /* 320 */ 21,49,105,0, /* 320cor */ 21, 7,3,0};
 
 always @(posedge clk) begin
-	arx <= ~border_en ? arxt[{res_h+(res_h[1]&h40corr),res_v}] : pal ? 12'd40 : 12'd4;
-	ary <= ~border_en ? aryt[{res_h+(res_h[1]&h40corr),res_v}] : pal ? 12'd33 : 12'd3;
+	if(border_en) begin
+		arx = (res_h[1] & h40corr) ? 12'd350 : 12'd320;
+		ary = pal ? 12'd288 : 12'd239;
+	end
+	else begin
+		arx <= arxt[{res_h+(res_h[1]&h40corr),res_v}];
+		ary <= aryt[{res_h+(res_h[1]&h40corr),res_v}];
+	end
 end
 
 reg hs_d;
@@ -169,27 +175,27 @@ wire hbl = ~(border_en ? hde_brd : vdp_de_h);
 
 video_cleaner cleaner
 (
-       .clk_vid(clk),
-       .ce_pix(ce_pix),
+	.clk_vid(clk),
+	.ce_pix(ce_pix),
 
-       .interlace(interlace),
-       .f1(f1),
+	.interlace(interlace),
+	.f1(f1),
 
-       .R(r_in),
-       .G(g_in),
-       .B(b_in),
-       .HSync(hs_clean),
-       .VSync(vs_in),
-       .HBlank(hbl),
-       .VBlank(vbl),
+	.R(r_in),
+	.G(g_in),
+	.B(b_in),
+	.HSync(hs_clean),
+	.VSync(vs_in),
+	.HBlank(hbl),
+	.VBlank(vbl),
 
-       .VGA_R(r_c),
-       .VGA_G(g_c),
-       .VGA_B(b_c),
-       .VGA_VS(vs_c),
-       .VGA_HS(hs_c),
-       .HBlank_out(hblank_c),
-       .VBlank_out(vblank_c)
+	.VGA_R(r_c),
+	.VGA_G(g_c),
+	.VGA_B(b_c),
+	.VGA_VS(vs_c),
+	.VGA_HS(hs_c),
+	.HBlank_out(hblank_c),
+	.VBlank_out(vblank_c)
 );
 
 wire [7:0] r_c, g_c, b_c;
@@ -217,6 +223,5 @@ cofi coffee
 	.green_out(g_out),
 	.blue_out(b_out)
 );
-
 
 endmodule
